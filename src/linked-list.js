@@ -1,27 +1,200 @@
 const Node = require('./node');
 
 class LinkedList {
-    constructor() {}
 
-    append(data) {}
+// *****************************************************************************
+    constructor() {
+        this.length = 0;
+        this._head = null;
+        this._tail = null;
+    }
 
-    head() {}
+// *****************************************************************************
+// Добавляет узел в конец списка
 
-    tail() {}
+    append( data ) {
+        let node = new Node( data, null, null );
+        if ( this.length === 0 ) {
+            this._head = node;
+            this._tail = node;
+        } else {
+            this._tail.next = node;
+            node.prev = this._tail;
+            this._tail = node;
+        }
+        this.length++;
+        return this;
+    }
 
-    at(index) {}
+// *****************************************************************************
+// Возвращает данные из головы списка
 
-    insertAt(index, data) {}
+    head() {
+        if ( this._head === null ) {
+            return null;
+        } else {
+            return this._head.data;    
+        }
+    }
 
-    isEmpty() {}
+// *****************************************************************************
+// Возвращает данные из конца списка
 
-    clear() {}
+    tail() {
+        if ( this._tail === null ) {
+            return null;
+        } else {
+            return this._tail.data;    
+        }
+    }
 
-    deleteAt(index) {}
+// *****************************************************************************
+// Возвращает данные из элемента с указанным индексом
 
-    reverse() {}
+    at( index ) {
+        if ( this.length === 0 || index < 0 || index > this.length ) {
+            return -1;
+        }
+        let currNode = this._head;
+        for ( let currIdx = 0; currIdx < index; currIdx++ ) {
+            currNode = currNode.next;
+        }
+        return currNode.data;
+    }
 
-    indexOf(data) {}
+// *****************************************************************************
+// Вставляет данные в указанный индекс
+
+    insertAt( index, data ) {
+        if ( this.length === 0 || index < 0 || index > this.length ) {
+            return -1;
+        }
+        let newNode = new Node( data, null, null );
+        if ( index === 0 ) {
+            newNode.next = this._head;
+            this._head.prev = newNode;
+            this._head = newNode;
+        } else if ( index === this.length - 1 ) {
+            newNode.prev = this._tail.prev;
+            newNode.prev.next = newNode;
+            newNode.next = this._tail;
+            this._tail.prev = newNode;
+        } else {
+            let currNode = this._head;
+            for ( let currIdx = 0; currIdx < index; currIdx++ ) {
+                currNode = currNode.next;
+            }
+            newNode.prev = currNode.prev;
+            newNode.prev.next = newNode;
+            currNode.prev = newNode;
+            newNode.next = currNode;
+        }
+        this.length++;
+        return this;
+    }
+
+// *****************************************************************************
+// Возвращает true, если список пуст
+
+    isEmpty() {
+        let result = ( this.length === 0 ) ? true : false;
+            return result;
+    }
+
+// *****************************************************************************
+// Очищает список
+
+    clear() {
+/*        let currNode = this._head;
+        for ( let currIdx = 0; currIdx < this.length; currIdx++ ) {
+            currNode.prev = null;
+            let tmpNode = currNode.next;
+            currNode.next = null;    
+            currNode = tmpNode;
+        }
+*/
+        this.length = 0;
+        this._head = null;
+        this._tail = null;
+        return this;
+    }
+
+// *****************************************************************************
+// Удаляет элемент с указанным индексом
+
+    deleteAt( index ) {
+        if ( this.length === 0 || index < 0 || index > this.length ) {
+            return -1;
+        }
+        let currNode = this._head;
+        if ( index === 0 ) {
+            this._head = currNode.next;
+            if ( this._head === null ) {
+                this._tail = null;
+            } else {
+                this._head.prev = null;
+            }
+        } else if ( index === this.length - 1 ) {
+            this._tail = this._tail.prev;
+            this._tail.next = null;
+        } else {
+            for ( let currIdx = 0; currIdx < index; currIdx++ ) {
+                currNode = currNode.next;
+            }
+            currNode.prev.next = currNode.next;
+            currNode.next.prev = currNode.prev;
+        }
+        this.length--;
+        return this;
+    }
+
+// *****************************************************************************
+// Переворачивает список
+
+    reverse() {
+        if ( this.length > 1 ) {
+            let currNode = this._head;
+            this._head = this._tail;
+//            for ( let currIdx = 0; currIdx < this.length; currIdx++ ) {
+//                tmpNode = currNode.next;
+//                currNode.next = prev;
+            let prevPtr = null;
+            while ( currNode.next !== null ) {
+                let tmpPtr = currNode.next;
+                currNode.next = prevPtr;
+                prevPtr = currNode;
+                currNode = tmpPtr;
+            }
+            currNode.next = prevPtr;
+            this._head = currNode;
+            prevPtr = null;
+            while ( currNode.prev !== null ) {
+                let tmpPtr = currNode.prev;
+                currNode.prev = prevPtr;
+                prevPtr = currNode;
+                currNode = tmpPtr;
+            }
+            currNode.prev = prevPtr;
+            this._tail = currNode;
+        }
+        return this;
+    }
+
+// *****************************************************************************
+// Возвращает индекс с указанным значением или -1, если такого значения нет
+
+    indexOf( data ) {
+        let currNode = this._head;
+        let currIdx = 0;
+        while ( currIdx < this.length ) {
+            if ( currNode.data === data ) {
+                return currIdx;
+            }
+            currNode = currNode.next;
+            currIdx++;
+        }
+        return -1;
+    }
 }
 
 module.exports = LinkedList;
